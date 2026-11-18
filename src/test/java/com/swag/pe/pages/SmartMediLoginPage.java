@@ -61,10 +61,10 @@ public class SmartMediLoginPage extends PageObject {
 
     public void aceptarAlertaSiExiste() {
         try {
-            waitABit(1000);
+            waitABit(800);
             Alert alerta = getDriver().switchTo().alert();
             alerta.accept();
-            waitABit(1000);
+            waitABit(800);
         } catch (NoAlertPresentException ignored) {
         }
     }
@@ -73,6 +73,13 @@ public class SmartMediLoginPage extends PageObject {
         aceptarAlertaSiExiste();
         waitABit(1000);
         return getDriver().getCurrentUrl();
+    }
+
+    private void clicMenuSeguro(String ruta) {
+        aceptarAlertaSiExiste();
+        WebElement item = find(By.cssSelector("ul.menu li[routerLink='" + ruta + "']")).waitUntilPresent();
+        JavascriptExecutor js = (JavascriptExecutor) getDriver();
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'}); arguments[0].click();", item);
     }
 
     private void deslizarPantallaSuave(int segundosTotales) {
@@ -89,15 +96,15 @@ public class SmartMediLoginPage extends PageObject {
     }
 
     public void recorrerModulosMedicoInteractivo() {
-        // 1. Mostrar Dashboard inicial con scroll suave (10 seg)
+        // 1. Dashboard inicial
         deslizarPantallaSuave(10);
 
-        // 2. Registrar Paciente (10 seg con scroll)
-        find(By.cssSelector("ul.menu li[routerLink='/patients']")).waitUntilClickable().click();
+        // 2. Registrar Paciente
+        clicMenuSeguro("/patients");
         deslizarPantallaSuave(10);
 
-        // 3. Historial Clínico 3D: seleccionar paciente real, abrir mordida y deslizar (10 seg)
-        find(By.cssSelector("ul.menu li[routerLink='/historial-clinico']")).waitUntilClickable().click();
+        // 3. Historial Clínico 3D
+        clicMenuSeguro("/historial-clinico");
         waitABit(1500);
         try {
             WebElement selectEl = getDriver().findElement(By.cssSelector("select[name='paciente_id']"));
@@ -113,16 +120,16 @@ public class SmartMediLoginPage extends PageObject {
         } catch (Exception ignored) {}
         deslizarPantallaSuave(8);
 
-        // 4. Tratamientos (10 seg con scroll)
-        find(By.cssSelector("ul.menu li[routerLink='/treatments']")).waitUntilClickable().click();
+        // 4. Tratamientos
+        clicMenuSeguro("/treatments");
         deslizarPantallaSuave(10);
 
-        // 5. Reportes (10 seg con scroll)
-        find(By.cssSelector("ul.menu li[routerLink='/reportes']")).waitUntilClickable().click();
+        // 5. Reportes
+        clicMenuSeguro("/reportes");
         deslizarPantallaSuave(10);
 
-        // 6. Consultas Clínicas: seleccionar paciente, cargar ficha y navegar pestañas (10 seg)
-        find(By.cssSelector("ul.menu li[routerLink='/consultas']")).waitUntilClickable().click();
+        // 6. Consultas Clínicas
+        clicMenuSeguro("/consultas");
         waitABit(1500);
         try {
             WebElement selectConsulta = getDriver().findElement(By.cssSelector(".selector-box select"));
@@ -142,21 +149,23 @@ public class SmartMediLoginPage extends PageObject {
         } catch (Exception ignored) {}
         deslizarPantallaSuave(4);
 
-        // 7. Ver Pacientes (10 seg con scroll)
-        find(By.cssSelector("ul.menu li[routerLink='/patients-list']")).waitUntilClickable().click();
+        // 7. Ver Pacientes
+        clicMenuSeguro("/patients-list");
         deslizarPantallaSuave(10);
 
-        // 8. Alertas IoT (10 seg con scroll)
-        find(By.cssSelector("ul.menu li[routerLink='/alertas-iot']")).waitUntilClickable().click();
+        // 8. Alertas IoT
+        clicMenuSeguro("/alertas-iot");
         deslizarPantallaSuave(10);
 
-        // 9. Configuración (6 seg)
-        find(By.cssSelector("ul.menu li[routerLink='/configuracion']")).waitUntilClickable().click();
+        // 9. Configuración
+        clicMenuSeguro("/configuracion");
         deslizarPantallaSuave(6);
     }
 
     public void cerrarSesion() {
-        botonCerrarSesion.waitUntilClickable().click();
+        aceptarAlertaSiExiste();
+        WebElement btnSalir = botonCerrarSesion.waitUntilPresent();
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btnSalir);
         aceptarAlertaSiExiste();
         waitABit(1000);
     }
